@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 class WelcomeController extends Controller
 {
     public function index()
@@ -14,5 +13,6 @@ class WelcomeController extends Controller
         $activeMenu = 'dashboard';
 
         return view('welcome', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+
     }
 }
