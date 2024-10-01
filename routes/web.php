@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\SupplierController;
 
 Route::get('/', [WelcomeController::class, 'index']);
 
@@ -43,5 +44,17 @@ Route::group(['prefix' => 'kategori'], function () {
     Route::get('/{id}/edit', [KategoriController::class, 'edit']);  // menampilkan halaman form edit kategori
     Route::put('/{id}', [KategoriController::class, 'update']);     // menyimpan perubahan data kategori
     Route::delete('/{id}', [KategoriController::class, 'destroy']); // menghapus data kategori
+});
+
+// TABEL SUPPLIER
+Route::group(['prefix' => 'stok'], function () {
+    Route::get('/', [SupplierController::class, 'index']);          // menampilkan halaman awal supplier
+    Route::post('/list', [SupplierController::class, 'list']);      // menampilkan data supplier dalam bentuk json untuk datatables
+    Route::get('/create', [SupplierController::class, 'create']);   // menampilkan halaman form tambah supplier
+    Route::post('/', [SupplierController::class, 'store']);         // menyimpan data supplier baru
+    Route::get('/{id}', [SupplierController::class, 'show']);       // menampilkan detail supplier
+    Route::get('/{id}/edit', [SupplierController::class, 'edit']);  // menampilkan halaman form edit supplier
+    Route::put('/{id}', [SupplierController::class, 'update']);     // menyimpan perubahan data supplier
+    Route::delete('/{id}', [SupplierController::class, 'destroy']); // menghapus data supplier
 });
 ?>
