@@ -2,7 +2,7 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-class StokModel extends Model
+class SupplierModel extends Model
 {
     use HasFactory;
     protected $table = 'm_supplier'; // Mendefinisikan nama tabel yang digunakan oleh model ini

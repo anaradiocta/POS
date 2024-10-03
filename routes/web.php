@@ -48,7 +48,7 @@ Route::group(['prefix' => 'kategori'], function () {
 });
 
 // TABEL SUPPLIER
-Route::group(['prefix' => 'stok'], function () {
+Route::group(['prefix' => 'supplier'], function () {
     Route::get('/', [SupplierController::class, 'index']);          // menampilkan halaman awal supplier
     Route::post('/list', [SupplierController::class, 'list']);      // menampilkan data supplier dalam bentuk json untuk datatables
     Route::get('/create', [SupplierController::class, 'create']);   // menampilkan halaman form tambah supplier
