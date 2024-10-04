@@ -173,7 +173,8 @@ class UserController extends Controller
     // Menampilkan halaman form tambah user Ajax
     public function create_ajax(){
         $level = LevelModel::select('level_id','level_nama')->get();
-        return view('user.create_ajax')->with('level',$level);
+        return view('user.create_ajax')
+            ->with('level',$level);
     }
 
     // Ajax menyimpan data user baru
@@ -255,6 +256,35 @@ class UserController extends Controller
         }
 
         return redirect('/');
+    }
+
+    // Ajax hapus data
+    public function confirm_ajax(String $id){
+        $user = UserModel::find($id);
+        return view('user.confirm_ajax', ['user' => $user]);
+    }
+    // delete ajax
+    public function delete_ajax(Request $request, $id)
+    {
+    // Cek apakah request dari ajax
+    if ($request->ajax() || $request->wantsJson()) {
+        $user = UserModel::find($id);
+
+        if ($user) {
+            $user->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Data berhasil dihapus'
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data tidak ditemukan'
+            ]);
+        }
+    }
+
+    return redirect('/');
     }
 }
 ?>
