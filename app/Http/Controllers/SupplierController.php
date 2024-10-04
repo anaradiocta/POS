@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\StokModel;
 use App\Models\SupplierModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables;
 
 class SupplierController extends Controller
@@ -165,6 +166,39 @@ class SupplierController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             return redirect('/supplier')->with('error', 'Data supplier gagal dihapus karena masih terkait dengan data lain');
         }
+    }
+
+    public function create_ajax()
+    {
+        return view('stok.create_ajax');
+    }
+
+    public function store_ajax(Request $request)
+    {
+        // cek apakah request berupa ajax
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+            'supplier_kode' => 'required|string|unique:m_supplier,supplier_kode', // supplier_kode harus unik
+            'supplier_nama' => 'required|string|max:100', // supplier_nama harus diisi dan maksimal 100 karakter
+            'supplier_alamat' => 'nullable|string|max:255' // supplier_alamat opsional
+            ];
+            // use Illuminate\Support\Facades\Validator;
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'    => false, // response status, false: error/gagal, true: berhasil
+                    'message'   => 'Validasi Gagal',
+                    'msgField'  => $validator->errors(), // pesan error validasi
+                ]);
+            }
+            SupplierModel::create($request->all());
+            return response()->json([
+                'status'    => true,
+                'message'   => 'Data level berhasil disimpan'
+            ]);
+        }
+        redirect('/');
     }
 
 }
