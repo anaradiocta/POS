@@ -170,7 +170,7 @@ class SupplierController extends Controller
 
     public function create_ajax()
     {
-        return view('stok.create_ajax');
+        return view('supplier.create_ajax');
     }
 
     public function store_ajax(Request $request)
