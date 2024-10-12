@@ -9,7 +9,8 @@ class AuthController extends Controller
 {
     public function login()
     {
-        if(Auth::check()){ //jika sudah login, maka redirect ke halaman home
+        // Jika sudah login, maka redirect ke halaman home
+        if (Auth::check()) {
             return redirect('/');
         }
         return view('auth.login');
@@ -19,6 +20,7 @@ class AuthController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $credentials = $request->only('username', 'password');
+
             if (Auth::attempt($credentials)) {
                 return response()->json([
                     'status' => true,
