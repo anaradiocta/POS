@@ -9,12 +9,15 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RegisterController;
 use PharIo\Manifest\Author;
 
 Route::pattern('id', '[0-9]+'); //artinya ketika ada parameter (id), maka harus berupa angka
 
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
+Route::get('register',[AuthController::class,'register']);
+Route::post('register',[AuthController::class,'store']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 
 Route::middleware(['auth'])->group(function () {
