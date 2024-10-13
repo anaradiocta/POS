@@ -111,18 +111,17 @@ Route::group(['prefix' => 'supplier'], function () {
 });
 
 // TABEL BARANG
-Route::middleware(['authorize:ADM,MNG'])->group(function () {
-    // Route::group(['prefix' => 'barang'], function () {
-        Route::get('/barang', [BarangController::class, 'index']);
-        Route::post('/barang/list', [BarangController::class, 'list']);
-        // Route::get('/create', [BarangController::class, 'create']);
-        // Route::post('/', [BarangController::class, 'store']);
-        Route::get('/barang/create_ajax', [BarangController::class, 'create_ajax']);
-        Route::post('/barang/ajax', [BarangController::class, 'store_ajax']);
-        Route::get('/barang/{id}/edit_ajax', [BarangController::class, 'edit_ajax']);
-        Route::get('/barang/{id}/delete_ajax', [BarangController::class, 'delete_ajax']);
-        Route::put('/barang/{id}/update_ajax', [BarangController::class, 'update_ajax']);
-        Route::delete('/barang/{id}/delete_ajax', [BarangController::class, 'delete_ajax']);
+Route::group(['prefix' => 'barang', 'middleware' => 'authorize:ADM,MNG'], function(){
+    Route::get('/', [BarangController::class, 'index']);
+    Route::post('/list', [BarangController::class, 'list']);
+    Route::get('/create', [BarangController::class, 'create']);
+    Route::post('/', [BarangController::class, 'store']);
+    Route::get('/create_ajax', [BarangController::class, 'create_ajax']);
+    Route::post('/ajax', [BarangController::class, 'store_ajax']);
+    Route::get('/{id}', [BarangController::class, 'show']);
+    Route::get('/{id}/edit', [BarangController::class, 'edit']);
+    Route::put('/{id}', [BarangController::class, 'update']);
+    Route::delete('/{id}', [BarangController::class, 'destroy']);
     });
 });
 // });
