@@ -132,6 +132,7 @@ Route::middleware(['authorize:ADM,MNG,STF,CUS'])->group(function(){
     Route::get('/barang/import', [BarangController::class, 'import']); //ajax form upload excel
     Route::post('/barang/import_ajax', [BarangController::class, 'import_ajax']); //ajax form upload excel
     Route::get('/barang/export_excel', [BarangController::class, 'export_excel']); //export_excel
+    Route::get('/barang/export_pdf', [BarangController::class, 'export_pdf']); //export_pdf
     Route::delete('/barang/{id}', [BarangController::class, 'destroy']); // menghapus data Supplier
 });
 });
