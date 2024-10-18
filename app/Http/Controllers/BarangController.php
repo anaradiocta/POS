@@ -6,22 +6,25 @@ use App\Models\BarangModel;
 use App\Models\KategoriModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Hash;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Yajra\DataTables\Facades\DataTables;
 
 class BarangController extends Controller
 {
     public function index(){
-        $breadcrumb = (object)[
-            'title' =>'Daftar Barang',
-            'list'=>['Home','barang']
-        ];
-        $page = (object)[
-            'title'=>'Daftar Barang yang terdaftar dalam sistem'
-        ];
         $activeMenu = 'barang';
-        $kategori = kategorimodel::all();
-        return view('barang.index',['breadcrumb'=>$breadcrumb,'page'=>$page,'activeMenu'=>$activeMenu, 'kategori'=>$kategori]);
-    }
+        $breadcrumb = (object)[
+            'title' => 'Data Barang',
+            'list'  => ['Home', 'Barang']
+        ];
+
+        $kategori = KategoriModel::select('kategori_id', 'kategori_nama')->get();
+        return view('barang.index', [
+            'activeMenu'  => $activeMenu,
+            'breadcrumb'  => $breadcrumb,
+            'kategori'    => $kategori
+        ]);    }
     public function list(Request $request){
         $barang = barangmodel::select('barang_id','kategori_id','barang_kode','barang_nama','harga_beli','harga_jual')
         ->with('kategori');
