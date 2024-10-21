@@ -93,6 +93,7 @@ Route::middleware(['authorize:ADM,MNG,STF,CUS'])->group(function(){
     Route::get('/kategori/import', [KategoriController::class, 'import']); //ajax form upload excel
     Route::post('/kategori/import_ajax', [KategoriController::class, 'import_ajax']); //ajax form upload excel
     Route::get('/kategori/export_excel', [KategoriController::class, 'export_excel']); //export_excel
+    Route::get('/kategori/export_pdf', [KategoriController::class, 'export_pdf']); //export_pdf
     Route::delete('/kategori/{id}', [KategoriController::class, 'destroy']); // menghapus data Kategori
 });
 
