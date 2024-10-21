@@ -42,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
             Route::put('/user/{id}/update_ajax', [UserController::class,'update_ajax']);   //menyimpan halaman form edit user ajax
             Route::get('/user/{id}/delete_ajax', [UserController::class, 'confirm_ajax']); //tampil form confirm delete user ajax
             Route::delete('/user/{id}/delete_ajax', [UserController::class, 'delete_ajax']);  //hapus data user
+            Route::get('/user/{id}', [UserController::class, 'show']);       // menampilkan detail level
             Route::delete('/user/{id}', [UserController::class, 'destroy']);     //mengahpus data user
 
         });
@@ -80,6 +81,7 @@ Route::middleware(['authorize:ADM,MNG,STF,CUS'])->group(function(){
     Route::put('/kategori/{id}/update_ajax', [KategoriController::class,'update_ajax']);   //menyimpan halaman form edit user ajax
     Route::get('/kategori/{id}/delete_ajax', [KategoriController::class, 'confirm_ajax']); //tampil form confirm delete user ajax
     Route::delete('/kategori/{id}/delete_ajax', [KategoriController::class, 'delete_ajax']);  //hapus data user
+    Route::get('/kategori/{id}', [KategoriController::class, 'show']);       // menampilkan detail level
     Route::delete('/kategori/{id}', [KategoriController::class, 'destroy']); // menghapus data Kategori
 });
 
@@ -97,6 +99,7 @@ Route::middleware(['authorize:ADM,MNG'])->group(function(){
     Route::put('/supplier/{id}/update_ajax', [SupplierController::class, 'update_ajax']); // menyimpan perubahan data supplier Ajax
     Route::get('/supplier/{id}/delete_ajax', [SupplierController::class, 'confirm_ajax']); // untuk tampilkan form confirm delete supplier Ajax
     Route::delete('/supplier/{id}/delete_ajax', [SupplierController::class, 'delete_ajax']); // untuk hapus data supplier Ajax
+    Route::get('/supplier/{id}', [SupplierController::class, 'show']);       // menampilkan detail level
     Route::delete('/supplier/{id}', [SupplierController::class, 'destroy']); // menghapus data Supplier
 });
 
