@@ -60,6 +60,8 @@ Route::middleware(['authorize:ADM'])->group(function(){ //semua route harus puny
     Route::put('/level/{id}/update_ajax', [LevelController::class,'update_ajax']);   //menyimpan halaman form edit user ajax
     Route::get('/level/{id}/delete_ajax', [LevelController::class, 'confirm_ajax']); //tampil form confirm delete user ajax
     Route::delete('/level/{id}/delete_ajax', [LevelController::class, 'delete_ajax']);  //hapus data user
+    Route::get('/level/import', [LevelController::class, 'import']); //ajax form upload excel
+    Route::post('/level/import_ajax', [LevelController::class, 'import_ajax']); //ajax form upload excel
     Route::delete('/level/{id}', [LevelController::class, 'destroy']); // menghapus data level
 });
 

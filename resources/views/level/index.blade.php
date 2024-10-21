@@ -6,12 +6,32 @@
         <div class="card-header">
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
+                <button onclick="modalAction('{{ url('/level/import') }}')" class="btn btn-info">Import Level</button>
                 <a class="btn btn-sm btn-primary mt-1" href="{{ url('level/create') }}">Tambah</a>
                 <button onclick="modalAction('{{ url('/level/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Ajax</button>
-                <a class="btn btn-sm btn-primary mt-1" href="{{ url('level/create') }}">Tambah</a>
+
             </div>
         </div>
         <div class="card-body">
+            <div id="filter" class="form-horizontal filter-date p-2 border-bottom mb-2">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group form-group-sm row text-sm mb-0">
+                            <label for="filter_level" class="col-md-1 col-form-label">Filter</label>
+                            <div class="col-md-3">
+                                <select name="filter_level" class="form-control form-control-sm filter_level">
+                                    <option value="">- Semua -</option>
+                                    {{-- @foreach($levels as $level)
+                                        <option value="{{ $level->level_id }}">{{ $level->level_nama }}</option>
+                                    @endforeach --}}
+                                </select>
+                                <small class="form-text text-muted">Filter Level</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
@@ -47,9 +67,9 @@
             </table>
         </div>
     </div>
+<div id="myModal" class="modal fade animate shake" tabindex="-1" data-backdrop="static" data-keyboard="false" data-width="75%"></div>
 @endsection
-@push('css')
-@endpush
+
 @push('js')
     <script>
         function modalAction(url = '') {
@@ -91,16 +111,25 @@
                     },
                     {
                         data: "aksi",
-                        className: "",
+                        className: "text-center",
+                        // width: "14%",
                         orderable: false,
                         searchable: false
                     }
                 ]
             });
 
+            $('#table-level_filter input').unbind().bind().on('keyup', function(e) {
+            if (e.keyCode == 13) { // enter key
+                tableLevel.search(this.value).draw();
+            }
+        });
             // $('#level_id').on('change', function(){
             //     dataLevel.ajax.reload();
             // });
+            $('.filter_level').change(function() {
+            tableLevel.draw();
+            });
         });
     </script>
 @endpush
