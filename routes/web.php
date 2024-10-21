@@ -122,6 +122,8 @@ Route::middleware(['authorize:ADM,MNG,STF,CUS'])->group(function(){
     Route::get('/barang/create', [BarangController::class, 'create']);   // menampilkan halaman form tambah Barang
     Route::get('/barang/create_ajax', [BarangController::class, 'create_ajax']); // menampilkan halaman form tambah barang Ajax
     Route::post('/barang/ajax', [BarangController::class, 'store_ajax']); // menyimpan data barang baru Ajax
+    Route::get('/barang/{id}', [BarangController::class, 'show']);       // menampilkan detail barang
+    // Route::get('/barang/{id}/show_ajax', [BarangController::class, 'show_ajax']);       // menampilkan detail barang
     Route::post('/barang', [BarangController::class, 'store']);         // menyimpan data Barang baru
     Route::get('/barang/{id}/edit_ajax', [BarangController::class, 'edit_ajax']); // menampilkan halaman form edit barang Ajax
     Route::get('/barang/{id}/edit', [BarangController::class, 'edit']); // menampilkan halaman form edit Barang
