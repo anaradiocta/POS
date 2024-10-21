@@ -59,7 +59,7 @@ class SupplierController extends Controller
         return DataTables::of($supplier)
             ->addIndexColumn() // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
             ->addColumn('aksi', function ($supplier) { // menambahkan kolom aksi
-                $btn = '<a href="' . url('/supplier/' . $supplier->supplier_id) . '" class="btn btn-info btn-sm">Detail</a> ';
+                $btn = '<button onclick="modalAction(\'' . url('/supplier/' . $supplier->supplier_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/supplier/' . $supplier->supplier_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/supplier/' . $supplier->supplier_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
@@ -86,6 +86,20 @@ class SupplierController extends Controller
         ];
         $activeMenu = 'supplier'; // set menu yang sedang aktif
         return view('supplier.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'supplier' => $supplier, 'activeMenu' => $activeMenu]);
+    }
+
+    public function show_ajax(string $id)
+    {
+        $supplier = SupplierModel::find($id);
+
+        if (!$supplier) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data supplier tidak ditemukan'
+            ]);
+        }
+
+        return view('supplier.show_ajax', ['supplier' => $supplier]);
     }
 
     // Menampilkan halaman form tambah supplier

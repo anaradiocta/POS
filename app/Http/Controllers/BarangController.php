@@ -47,7 +47,7 @@ class BarangController extends Controller
             ->addIndexColumn()
             ->addColumn('aksi', function ($barang) {
                 $btn = '<a href="' . url('/barang/' . $barang->barang_id) . '" class="btn btn-info btn-sm">Detail</a> ';
-                // $btn  = '<button onclick="modalAction(\''.url('/barang/' . $barang->barang_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn  = '<button onclick="modalAction(\''.url('/barang/' . $barang->barang_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\''.url('/barang/' . $barang->barang_id . '/edit_ajax').'\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\''.url('/barang/' . $barang->barang_id . '/delete_ajax').'\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
@@ -111,6 +111,20 @@ class BarangController extends Controller
     //     $activeMenu = 'barang'; // set menu yang sedang aktif
     //     return view('barang.show_ajax', ['breadcrumb' => $breadcrumb, 'page' => $page, 'barang' => $barang, 'activeMenu' => $activeMenu]);
     // }
+
+    public function show_ajax(string $id)
+    {
+        $barang = BarangModel::with('kategori')->find($id);
+
+        if (!$barang) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data barang tidak ditemukan'
+            ]);
+        }
+
+        return view('barang.show_ajax', ['barang' => $barang]);
+    }
 
     // Menampilkan halaman form edit barang ajax
     public function edit_ajax(string $id)

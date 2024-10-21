@@ -54,7 +54,7 @@ class KategoriController extends Controller
         return DataTables::of($kategoris)
             ->addIndexColumn() // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
             ->addColumn('aksi', function ($kategori) { // menambahkan kolom aksi
-                $btn = '<a href="' . url('/kategori/' . $kategori->kategori_id) . '" class="btn btn-info btn-sm">Detail</a> ';
+                $btn  = '<button onclick="modalAction(\''.url('/kategori/' . $kategori->kategori_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';;
                 $btn .= '<button onclick="modalAction(\'' . url('/kategori/' . $kategori->kategori_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/kategori/' . $kategori->kategori_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
@@ -113,6 +113,20 @@ class KategoriController extends Controller
         $activeMenu = 'kategori'; // set menu yang sedang aktif
         return view('kategori.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'kategori' => $kategori, 'activeMenu' => $activeMenu]);
     }
+
+    public function show_ajax(string $id)
+{
+    $kategori = KategoriModel::find($id);
+
+    if (!$kategori) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Data kategori tidak ditemukan'
+        ]);
+    }
+
+    return view('kategori.show_ajax', ['kategori' => $kategori]);
+}
 
     // Menampilkan halaman form edit kategori
     public function edit(string $id)
