@@ -86,6 +86,8 @@ Route::middleware(['authorize:ADM,MNG,STF,CUS'])->group(function(){
     Route::delete('/kategori/{id}/delete_ajax', [KategoriController::class, 'delete_ajax']);  //hapus data user
     Route::get('/kategori/{id}', [KategoriController::class, 'show']);       // menampilkan detail level
     Route::get('/kategori/{id}/show_ajax', [KategoriController::class, 'show_ajax']);
+    Route::get('/kategori/import', [KategoriController::class, 'import']); //ajax form upload excel
+    Route::post('/kategori/import_ajax', [KategoriController::class, 'import_ajax']); //ajax form upload excel
     Route::delete('/kategori/{id}', [KategoriController::class, 'destroy']); // menghapus data Kategori
 });
 
