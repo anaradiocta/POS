@@ -107,6 +107,8 @@ Route::middleware(['authorize:ADM,MNG'])->group(function(){
     Route::delete('/supplier/{id}/delete_ajax', [SupplierController::class, 'delete_ajax']); // untuk hapus data supplier Ajax
     Route::get('/supplier/{id}', [SupplierController::class, 'show']);       // menampilkan detail level
     Route::get('/supplier/{id}/show_ajax', [SupplierController::class, 'show_ajax']);
+    Route::get('/supplier/import', [SupplierController::class, 'import']); //ajax form upload excel
+    Route::post('/supplier/import_ajax', [SupplierController::class, 'import_ajax']); //ajax form upload excel
     Route::delete('/supplier/{id}', [SupplierController::class, 'destroy']); // menghapus data Supplier
 });
 
