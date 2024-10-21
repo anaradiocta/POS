@@ -112,6 +112,7 @@ Route::middleware(['authorize:ADM,MNG'])->group(function(){
     Route::get('/supplier/{id}/show_ajax', [SupplierController::class, 'show_ajax']);
     Route::get('/supplier/import', [SupplierController::class, 'import']); //ajax form upload excel
     Route::post('/supplier/import_ajax', [SupplierController::class, 'import_ajax']); //ajax form upload excel
+    Route::get('/supplier/export_excel', [SupplierController::class, 'export_excel']); //export_excel
     Route::delete('/supplier/{id}', [SupplierController::class, 'destroy']); // menghapus data Supplier
 });
 
