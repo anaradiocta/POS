@@ -45,6 +45,7 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/user/{id}/delete_ajax', [UserController::class, 'delete_ajax']);  //hapus data user
             Route::get('/user/import', [UserController::class, 'import']); //ajax form upload excel
             Route::post('/user/import_ajax', [UserController::class, 'import_ajax']); //ajax form upload excel
+            Route::get('/user/export_excel', [UserController::class, 'export_excel']); //export_excel
             Route::delete('/user/{id}', [UserController::class, 'destroy']);     //mengahpus data user
 
         });
