@@ -67,6 +67,7 @@ Route::middleware(['authorize:ADM'])->group(function(){ //semua route harus puny
     Route::get('/barang/{id}/show',[LevelController::class,'show']);
     Route::get('/level/import', [LevelController::class, 'import']); //ajax form upload excel
     Route::post('/level/import_ajax', [LevelController::class, 'import_ajax']); //ajax form upload excel
+    Route::get('/level/export_excel', [LevelController::class, 'export_excel']); //export_excel
     Route::delete('/level/{id}', [LevelController::class, 'destroy']); // menghapus data level
 });
 
