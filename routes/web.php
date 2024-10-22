@@ -13,6 +13,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\DetailController;
+use App\Http\Controllers\ProfilController;
 use PharIo\Manifest\Author;
 
 Route::pattern('id', '[0-9]+'); //artinya ketika ada parameter (id), maka harus berupa angka
@@ -53,6 +54,12 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/user/export_pdf', [UserController::class, 'export_pdf']); //export_pdf
             Route::delete('/user/{id}', [UserController::class, 'destroy']);     //mengahpus data user
 
+        });
+
+        Route::middleware(['authorize:ADM,MNG,STF,PLG,CLT,CUS'])->group(function(){
+            Route::get('/profil', [ProfilController::class, 'index']);
+            Route::get('/profil/{id}/edit_ajax', [ProfilController::class, 'edit_ajax']);
+            Route::put('/profil/{id}/update_ajax', [ProfilController::class, 'update_ajax']);
         });
 
 //untuk M_LEVEL
@@ -151,7 +158,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [UserController::class, 'profile'])->name('profile'); // Tambahkan ini
 });
 
-Route::middleware(['authorize:ADM,MNG,STF'])->group(function(){
+Route::middleware(['authorize:ADM,MNG,STF,CUS'])->group(function(){
     Route::get('/stok', [StokController::class, 'index']);  // menampilkan halaman stok
     Route::post('/stok/list', [StokController::class, 'list'] );    //menampilkan data stok dalam bentuk json datatables
     Route::get('/stok/create', [StokController::class, 'create']);
