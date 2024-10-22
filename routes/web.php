@@ -14,11 +14,13 @@ use App\Http\Controllers\StokController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\DetailController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\HomeController;
 use PharIo\Manifest\Author;
 
 Route::pattern('id', '[0-9]+'); //artinya ketika ada parameter (id), maka harus berupa angka
 
-Route::get('/', [WelcomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+// Route::get('/', [WelcomeController::class, 'index'])->name('home');
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('register',[AuthController::class,'register']);
