@@ -14,6 +14,7 @@ use PharIo\Manifest\Author;
 
 Route::pattern('id', '[0-9]+'); //artinya ketika ada parameter (id), maka harus berupa angka
 
+Route::get('/', [WelcomeController::class, 'index'])->name('home');
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('register',[AuthController::class,'register']);
@@ -141,6 +142,10 @@ Route::middleware(['authorize:ADM,MNG,STF,CUS'])->group(function(){
     Route::get('/barang/export_excel', [BarangController::class, 'export_excel']); //export_excel
     Route::get('/barang/export_pdf', [BarangController::class, 'export_pdf']); //export_pdf
     Route::delete('/barang/{id}', [BarangController::class, 'destroy']); // menghapus data Supplier
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile'); // Tambahkan ini
 });
 });
 });

@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\DataTables;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Barryvdh\DomPDF\Facade\Pdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -29,33 +32,41 @@ class UserController extends Controller
 
         return view('user.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'level' => $level, 'activeMenu' => $activeMenu]);
     }
+
    // Ambil data user dalam bentuk json untuk datatables
    public function list(Request $request)
    {
-    $users = UserModel::select('user_id', 'username', 'nama', 'level_id')
-                ->with('level');
+    $users = UserModel::select('user_id', 'username', 'nama', 'avatar', 'level_id')
+                    ->with('level');
 
-    // Filter data user berdasarkan level_id
-    if ($request->level_id){
-        $users->where('level_id',$request->level_id);
-    }
+        // Filter data user berdasarkan level_id
+        if ($request->level_id){
+            $users->where('level_id', $request->level_id);
+        }
 
-    return DataTables::of($users)
-        ->addIndexColumn()  // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
-        ->addColumn('aksi', function ($user) {  // menambahkan kolom aksi
-             /* $btn  = '<a href="'.url('/user/' . $user->user_id).'" class="btn btn-info btnsm">Detail</a> ';
-            $btn .= '<a href="'.url('/user/' . $user->user_id . '/edit').'" class="btn btnwarning btn-sm">Edit</a> ';
-            $btn .= '<form class="d-inline-block" method="POST" action="'. url('/user/'.$user>user_id).'">'. csrf_field() . method_field('DELETE') .
-            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakit menghapus data ini?\');">Hapus</button></form>';*/
-            $btn  = '<button onclick="modalAction(\''.url('/user/' . $user->user_id . '/show_ajax').'\')" class="btn btn-info btn-sm">Detail</button> ';
-            $btn .= '<button onclick="modalAction(\''.url('/user/' . $user->user_id . '/edit_ajax').'\')" class="btn btn-warning btn-sm">Edit</button> ';
-            $btn .= '<button onclick="modalAction(\''.url('/user/' . $user->user_id . '/delete_ajax').'\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+        return DataTables::of($users)
+        // Menambahkan kolom index / no urut
+        ->addIndexColumn()
+        // Menampilkan gambar avatar atau logo default
+        ->editColumn('avatar', function ($user) {
+            $avatarUrl = $user->avatar
+                ? asset('gambar/' . $user->avatar)
+                : asset('adminlte/dist/img/AdminLTELogo.png'); // Gambar default
 
+                // return '<img src="' . $avatarUrl . '" style="width: 70px; height: 70px; object-fit: cover;" />';
+
+                return '<img src="' . asset('gambar/' . $user->avatar) . '"  style="width: 70px; height: 70px;" />';
+        })
+        // Menambahkan kolom aksi
+        ->addColumn('aksi', function ($user) {
+            $btn = '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+            $btn .= '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+            $btn .= '<button onclick="modalAction(\'' . url('/user/' . $user->user_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
             return $btn;
         })
-        ->rawColumns(['aksi']) // memberitahu bahwa kolom aksi adalah html
+        ->rawColumns(['avatar', 'aksi']) // Menandakan bahwa kolom 'avatar' dan 'aksi' mengandung HTML
         ->make(true);
-}
+    }
 
     // Menampilkan halaman form tambah user
     public function create()
@@ -66,7 +77,7 @@ class UserController extends Controller
         ];
 
         $page = (object) [
-            'title' => 'Tambah user baru'
+            'title' => 'Tambah User Baru'
         ];
 
         $level = LevelModel::all(); // ambil data level untuk ditampilkan di form
@@ -76,22 +87,28 @@ class UserController extends Controller
     }
 
     // Menyimpan data user baru
-    public function store (Request $request)
+    public function store(Request $request)
     {
-        $request->validate([
-            // username harus diisi, berupa string, minimal 3 karakter, dan bernilai unik di tabel m_user kolom username
-            'username'  => 'required|string|min:3|unique:m_user,username',
-            'nama'      => 'required|string|max: 100', //nama harus diisi, berupa string, dan maksimal 100 karakter
-            'password'  => 'required|min:5', // password harus diisi dan minimal 5 karakter
-            'level_id'  => 'required|integer' // level_id harus diisi dan berupa angka
-        ]);
+
+        $request->validate(
+            [
+                // username harus diisi, berupa string, min 3 karakter, dan bernilai unik di tabel m_user kolom username
+                'username' => 'required|string|min:3|unique:m_user,username',
+                'nama' => 'required|string|max:100',
+                'password' => 'required|min:5',
+                'level_id' => 'required|integer',
+                'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]
+        );
 
         UserModel::create([
-            'username'  => $request->username,
-            'nama'      => $request->nama,
-            'password'  => bcrypt($request->password), // password dienkripsi sebelum disimpan
-            'level_id'  => $request->level_id
+            'username' => $request->username,
+            'nama' => $request->nama,
+            'password' => bcrypt($request->password), // Pastikan password di-hash
+            'level_id' => $request->level_id
         ]);
+
+
         return redirect('/user')->with('success', 'Data user berhasil disimpan');
 
     }
@@ -99,16 +116,27 @@ class UserController extends Controller
     // Menampilkan detail user
     public function show(string $id)
     {
+
         $user = UserModel::with('level')->find($id);
+
         $breadcrumb = (object) [
             'title' => 'Detail User',
-            'list' => ['Home', 'User', 'Detail']
+            'list' => ['Home', 'User', 'Detail'],
         ];
+
         $page = (object) [
-            'title' => 'Detail user'
+            'title' => 'Detail User',
         ];
-        $activeMenu = 'user'; // set menu yang sedang aktif
-        return view('user.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'user' => $user, 'activeMenu' => $activeMenu]);
+
+        $activeMenu = 'user'; //set menu yang sedang aktif
+
+        return view('user.show', [
+            'breadcrumb' => $breadcrumb,
+            'page' => $page,
+            'user' => $user,
+            'activeMenu' => $activeMenu,
+        ]);
+
     }
 
     // Menampilkan detail user untuk AJAX
@@ -146,23 +174,27 @@ class UserController extends Controller
     }
 
     // Menyimpan perubahan data user
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            // username harus diisi, berupa string, minimal 3 karakter,
-            // dan bernilai unik di tabel_user kolom username kecuali untuk user dengan id yang sedang diedit
-            'username'  => 'required|string|min:3|unique:m_user,username,' . $id . ',user_id',
-            'nama'      => 'required|string|max:100', // nama harus diisi, berupa string, dan maksimal 100 karakter
-            'password'  => 'nullable|min:5', // password bisa diisi (minimal 5 karakter) dan bisa tidak diisi
-            'level_id'  => 'required|integer' //level_id harus diisi dan berupa angka
-        ]);
+        $request->validate(
+            [
+                // username harus diisi, berupa string, min 3 karakter, dan bernilai unik di tabel m_user kolom username
+                'username' => 'required|string|min:3|unique:m_user,username,' . $id . ',user_id',
+                'nama' => 'required|string|max:100',
+                'password' => 'nullable|min:5',
+                'level_id' => 'required|integer',
+            ]
+        );
+
         UserModel::find($id)->update([
-            'username'  => $request->username,
-            'nama'      => $request->nama,
-            'password'  => $request->password ? bcrypt($request->password) : UserModel::find($id)->password,
-            'level_id'  => $request->level_id
+            'username' => $request->username,
+            'nama' => $request->nama,
+            'password' => $request->filled('password') ? bcrypt($request->password) : UserModel::find($id)->password,
+            'level_id' => $request->level_id,
         ]);
-        return redirect('/user')->with("success", "Data user berhasil diubah");
+
+
+        return redirect('/user')->with('success', 'Data user berhasil diubah');
     }
 
     // Menghapus data user
@@ -191,30 +223,58 @@ class UserController extends Controller
     }
 
     // Ajax menyimpan data user baru
-    public function store_ajax(Request $request){
-        // cek apakah request berupa ajax
-        if ($request->ajax()||$request->wantsJson()){
+    public function store_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'level_id'=>'required|integer',
-                'username'=>'required|string|min:3|unique:m_user,username',
-                'nama'    =>'required|string|max:100',
-                'password'=>'required|min:6'
+                'level_id' => 'required|integer',
+                'username' => 'required|string|min:3|unique:m_user,username',
+                'nama' => 'required|string|max:100',
+                'password' => 'required|min:5',
+                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ];
 
+            // use iluminate/support/facades/validator
             $validator = Validator::make($request->all(), $rules);
 
-            if ($validator->fails()){
+            if ($validator->fails()) {
                 return response()->json([
-                    'status'=>false,
-                    'message'=>'Validasi Gagal',
-                    'msgField' => $validator->errors(), // pesan error validasi
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors(),
                 ]);
             }
-            UserModel::create($request->all());
-            return response()->json([
-                'status'=>true,
-                'message'=> 'Data user berhasil disimpan'
+
+            $input = $request->all();
+
+            // Jika avatar ada, simpan gambar, jika tidak ada gunakan default
+            if ($request->hasFile('avatar')) {
+                $fileName = 'profile_' . Auth::user()->user_id . '.' . $request->avatar->getClientOriginalExtension();
+
+                // Check if an existing profile picture exists and delete it
+                $oldFile = 'profile_pictures/' . $fileName;
+                if (Storage::disk('public')->exists($oldFile)) {
+                    Storage::disk('public')->delete($oldFile);
+                }
+
+                $request->avatar->move(public_path('gambar'), $fileName);
+            } else {
+                $fileName = 'profil-pic.png'; // default avatar
+            }
+
+            UserModel::create([
+                'level_id' => $input['level_id'],
+                'username' => $input['username'],
+                'nama' => $input['nama'],
+                'password' => bcrypt($input['password']),
+                'avatar' => $fileName, // Simpan nama file gambar
             ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data User berhasil disimpan',
+            ]);
+
         }
         redirect('/');
     }
@@ -229,41 +289,65 @@ class UserController extends Controller
 
      //  Ajax menyimpan update
      public function update_ajax(Request $request, $id) {
-        // cek apakah request dari ajax
+        // Periksa jika request berasal dari AJAX atau JSON
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
                 'level_id' => 'required|integer',
                 'username' => 'required|max:20|unique:m_user,username,' . $id . ',user_id',
                 'nama' => 'required|max:100',
-                'password' => 'nullable|min:6|max:20'
+                'password' => 'nullable|min:5|max:20',
+                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Avatar tidak wajib
             ];
 
-            // use Illuminate\Support\Facades\Validator;
+            // Validator untuk validasi data yang dikirim
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response()->json([
-                    'status' => false, // respon json, true: berhasil, false: gagal
+                    'status' => false, // Respon JSON, true: berhasil, false: gagal
                     'message' => 'Validasi gagal.',
-                    'msgField' => $validator->errors() // menunjukkan field mana yang error
+                    'msgField' => $validator->errors(), // Menunjukkan field mana yang error
                 ]);
             }
 
-            $check = UserModel::find($id);
-            if ($check) {
-                if (!$request->filled('password')) { // jika password tidak diisi, maka hapus dari request
+            // Cari user berdasarkan ID
+            $user = UserModel::find($id);
+            if ($user) {
+                // Jika password tidak diisi, hapus dari request agar tidak di-update
+                if (!$request->filled('password')) {
                     $request->request->remove('password');
                 }
-                $check->update($request->all());
+
+                if (!$request->filled('avatar')) {
+                    $request->request->remove('avatar');
+                }
+
+                // Cek jika ada file avatar yang diunggah
+                if ($request->hasFile('avatar')) {
+                    // Dapatkan file avatar
+                    $file = $request->file('avatar');
+                    // Buat nama unik untuk file avatar tersebut
+                    $filename = 'profile_' . Auth::user()->user_id . '.' . $request->avatar->getClientOriginalExtension();
+                    // Tentukan path penyimpanan
+                    $path = public_path('gambar');
+                    // Simpan file di direktori 'gambar'
+                    $file->move($path, $filename);
+
+                    // Simpan nama file avatar baru di database
+                    $user->avatar = $filename;
+                }
+
+                // Update data user kecuali avatar (avatar sudah di-handle di atas)
+                $user->update($request->except('avatar'));
 
                 return response()->json([
                     'status' => true,
-                    'message' => 'Data berhasil diupdate'
+                    'message' => 'Data berhasil diupdate',
                 ]);
             } else {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Data tidak ditemukan'
+                    'message' => 'Data tidak ditemukan',
                 ]);
             }
         }
@@ -272,14 +356,15 @@ class UserController extends Controller
     }
 
     // Ajax hapus data
-    public function confirm_ajax(String $id){
+    public function confirm_ajax(String $id)
+    {
         $user = UserModel::find($id);
+
         return view('user.confirm_ajax', ['user' => $user]);
     }
     // delete ajax
-    public function delete_ajax(Request $request, $id)
-    {
-    // Cek apakah request dari ajax
+    public function delete_ajax(Request $request, $id){
+    //cek apakah request dari AJAX
     if ($request->ajax() || $request->wantsJson()) {
         $user = UserModel::find($id);
 
@@ -287,12 +372,12 @@ class UserController extends Controller
             $user->delete();
             return response()->json([
                 'status' => true,
-                'message' => 'Data berhasil dihapus'
+                'message' => 'Data berhasil dihapus',
             ]);
         } else {
             return response()->json([
                 'status' => false,
-                'message' => 'Data tidak ditemukan'
+                'message' => 'Data tidak ditemukan',
             ]);
         }
     }
