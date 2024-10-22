@@ -4,9 +4,9 @@
         <div class="card-header">
             <h3 class="card-title">Stok Barang</h3>
             <div class="card-tools">
-                <a href="{{ url('/stok/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export Kategori Barang</a>
-                <a href="{{ url('/stok/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export Kategori Barang</a>
-                <button onclick="modalAction('{{ url('/stok/import') }}')" class="btn btn-info">Import Data Kategori</button>
+                <a href="{{ url('/stok/export_excel') }}" class="btn btn-primary"><i class="fa fa-file-excel"></i> Export Stok Barang</a>
+                <a href="{{ url('/stok/export_pdf') }}" class="btn btn-warning"><i class="fa fa-file-pdf"></i> Export Stok Barang</a>
+                <button onclick="modalAction('{{ url('/stok/import') }}')" class="btn btn-info">Import Data Stok</button>
                 <button onclick="modalAction('{{ url('stok/create_ajax')}}')" class="btn btn-success mt-1">Tambah Ajax</button>
             </div>
         </div>
