@@ -23,7 +23,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 // Route::get('/', [WelcomeController::class, 'index'])->name('home');
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
-Route::get('register',[AuthController::class,'register']);
+Route::get('register',[AuthController::class,'register'])->name('register');
 Route::post('register',[AuthController::class,'store']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 

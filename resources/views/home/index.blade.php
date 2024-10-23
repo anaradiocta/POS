@@ -80,7 +80,7 @@
             flex-direction: column;
             align-items: center;
         }
-        .login-link {
+        .register-link {
             margin-top: 0px;
             color: white;
             text-decoration: none;
@@ -95,7 +95,8 @@
             <a href="{{ route('login') }}">
                 <button class="button">Login</button>
             </a>
-            <a class="login-link" href="{{ route('login') }}">Login Administrator</a>
+            <a class="register-link" href="{{ route('register') }}">Belum punya akun?</a>
+            {{-- <a class="register-link" href="{{ route('register') }}">Belum punya akun?</a> --}}
         </div>
     </div>
     <div class="welcome">
