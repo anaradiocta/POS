@@ -43,8 +43,8 @@ class PenjualanController extends Controller
         return DataTables::of($penjualan)
             ->addIndexColumn() // menambahkan kolom index / no urut (default nama kolom: DT_RowIndex)
             ->addColumn('aksi', function ($penjualan) { // menambahkan kolom aksi
-                $btn = '<a href="' . url('/penjualan/' . $penjualan->penjualan_id) . '" class="btn btn-info btn-sm">Detail</a> ';
-                // $btn = '<button onclick="modalAction(\'' . url('/penjualan/' . $penjualan->penjualan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button>';
+                // $btn = '<a href="' . url('/penjualan/' . $penjualan->penjualan_id) . '" class="btn btn-info btn-sm">Detail</a> ';
+                $btn = '<button onclick="modalAction(\'' . url('/penjualan/' . $penjualan->penjualan_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button>';
                 $btn .= '<button onclick="modalAction(\'' . url('/penjualan/' . $penjualan->penjualan_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/penjualan/' . $penjualan->penjualan_id . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
                 return $btn;
@@ -54,16 +54,26 @@ class PenjualanController extends Controller
     }
     public function show(string $id)
     {
-        $penjualan = PenjualanModel::with('user')->find($id);
-        $breadcrumb = (object) ['title' => 'Detail Penjualan', 'list' => ['Home', 'Penjualan', 'Detail']];
-        $page = (object) ['title' => 'Detail Penjualan'];
-        $activeMenu = 'penjualan'; // set menu yang sedang aktif
-        return view('penjualan.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'penjualan' => $penjualan, 'activeMenu' => $activeMenu]);
+        $penjualan = PenjualanModel::with(['detail'])->find($id); // Memastikan relasi diambil
+
+        if (!$penjualan) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data penjualan tidak ditemukan'
+            ]);
+        }
+
+        return view('penjualan.show', ['penjualan' => $penjualan]);
+        // $penjualan = PenjualanModel::with('user')->find($id);
+        // $breadcrumb = (object) ['title' => 'Detail Penjualan', 'list' => ['Home', 'Penjualan', 'Detail']];
+        // $page = (object) ['title' => 'Detail Penjualan'];
+        // $activeMenu = 'penjualan'; // set menu yang sedang aktif
+        // return view('penjualan.show', ['breadcrumb' => $breadcrumb, 'page' => $page, 'penjualan' => $penjualan, 'activeMenu' => $activeMenu]);
     }
 
     public function show_ajax(string $id)
     {
-        $penjualan = PenjualanModel::with('penjualan')->find($id);
+        $penjualan = PenjualanModel::with('detail')->find($id);
 
         if(!$penjualan){
             return response()-> json([

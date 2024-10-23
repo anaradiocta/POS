@@ -17,6 +17,6 @@ class PenjualanModel extends Model
     }
     public function detail():HasMany
     {
-        return $this->hasMany(PenjualanDetailModel::class, 'detail_id','detail_id');
+        return $this->hasMany(PenjualanDetailModel::class, 'penjualan_id','penjualan_id');
     }
 }
