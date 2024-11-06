@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authentication; //implementasi class Authenticatable
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class UserModel extends Authenticatable implements JWTSubject
 {
@@ -51,5 +52,11 @@ class UserModel extends Authenticatable implements JWTSubject
     public function getRole()
     {
         return $this->level->level_kode;
+    }
+
+    protected function avatar(): Attribute{
+        return Attribute::make(
+            get: fn ($avatar) => url('/gambar' . $avatar),
+        );
     }
 }
