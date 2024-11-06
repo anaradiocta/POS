@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\LevelController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\BarangController;
+use App\Http\Controllers\Api\PenjualanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +59,9 @@ Route::put('barang/{barang}', [BarangController::class, 'update']);
 Route::delete('barang/{barang}', [BarangController::class, 'destroy']);
 Route::post('/barang', App\Http\Controllers\Api\BarangController::class)->name('barang');
 Route::get('barang/{barang}', [BarangController::class, 'show']);
+
+Route::post('/penjualan', App\Http\Controllers\Api\PenjualanController::class)->name('penjualan');
+Route::get('penjualan/{penjualan}', [PenjualanController::class, 'show']);
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
